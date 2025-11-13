@@ -1,0 +1,30 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Custom yellow color: #ffc61c */
+.bg-custom-yellow {
+  background-color: #ffc61c;
+}
+
+.text-custom-yellow {
+  color: #ffc61c;
+}
+
+.hover\:text-custom-yellow:hover {
+  color: #ffc61c;
+}
+
+.border-custom-yellow {
+  border-color: #ffc61c;
+}
+
+.focus\:border-custom-yellow:focus {
+  border-color: #ffc61c;
+}
+
+.focus\:ring-custom-yellow:focus {
+  --tw-ring-color: #ffc61c;
+}
+
+.accent-custom-yellow {
+  accent-color: #ffc61c;
+}

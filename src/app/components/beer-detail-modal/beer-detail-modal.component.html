@@ -1,0 +1,767 @@
+<div
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+  *ngIf="beer"
+>
+  <!-- Desktop Modal -->
+  <div
+    class="hidden md:flex bg-white rounded-xl shadow-2xl w-[800px] max-h-[95vh] overflow-hidden"
+  >
+    <!-- Loading State -->
+    <div *ngIf="loading" class="p-12 text-center">
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-2 border-custom-yellow mx-auto mb-4"
+      ></div>
+      <p class="text-gray-600">Loading beer details...</p>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading && fullBeer" class="flex flex-col h-full w-full">
+      <!-- Header -->
+      <div class="bg-custom-yellow p-6 rounded-t-xl h-[150px] overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+              {{ fullBeer.name }}
+            </h1>
+            <p class="text-xl text-gray-700 italic">{{ fullBeer.tagline }}</p>
+            <p class="text-sm text-gray-600 mt-2" *ngIf="fullBeer.first_brewed">
+              First brewed: {{ fullBeer.first_brewed }}
+            </p>
+          </div>
+          <button
+            (click)="onClose()"
+            class="text-gray-700 hover:text-gray-900 text-3xl font-light leading-none"
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+
+      <!-- Always Visible Image -->
+      <div class="bg-gray-50 px-6 py-3 flex justify-center flex-shrink-0">
+        <img
+          [src]="fullBeer.image_url || fallbackImage"
+          [alt]="fullBeer.name"
+          class="h-[15vh] max-w-full object-contain rounded-lg shadow-sm"
+          (error)="onImageError($event)"
+        />
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="bg-gray-100 px-6 py-3 flex-shrink-0">
+        <div class="flex space-x-1">
+          <button
+            (click)="setActiveTab('overview')"
+            [class.active]="activeTab === 'overview'"
+            class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm"
+          >
+            Overview
+          </button>
+          <button
+            (click)="setActiveTab('technical')"
+            [class.active]="activeTab === 'technical'"
+            class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm"
+          >
+            Technical
+          </button>
+          <button
+            (click)="setActiveTab('ingredients')"
+            [class.active]="activeTab === 'ingredients'"
+            class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm"
+          >
+            Ingredients
+          </button>
+          <button
+            (click)="setActiveTab('pairings')"
+            [class.active]="activeTab === 'pairings'"
+            class="px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm"
+          >
+            Pairings & Tips
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="flex-1 overflow-y-auto px-6 py-4">
+        <!-- Overview Tab -->
+        <div *ngIf="activeTab === 'overview'" class="space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Basic Info Section -->
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3
+                class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+              >
+                <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+                Basic Information
+              </h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white p-3 rounded-lg shadow-sm">
+                  <div class="text-2xl font-bold text-custom-yellow">
+                    {{ fullBeer.abv }}%
+                  </div>
+                  <div class="text-sm text-gray-600">Alcohol by Volume</div>
+                </div>
+                <div
+                  class="bg-white p-3 rounded-lg shadow-sm"
+                  *ngIf="fullBeer.ibu"
+                >
+                  <div class="text-2xl font-bold text-custom-yellow">
+                    {{ fullBeer.ibu }}
+                  </div>
+                  <div class="text-sm text-gray-600">
+                    International Bitterness Units
+                  </div>
+                </div>
+                <div
+                  class="bg-white p-3 rounded-lg shadow-sm"
+                  *ngIf="fullBeer.ebc"
+                >
+                  <div class="text-2xl font-bold text-custom-yellow">
+                    {{ fullBeer.ebc }}
+                  </div>
+                  <div class="text-sm text-gray-600">
+                    European Brewery Convention
+                  </div>
+                </div>
+                <div
+                  class="bg-white p-3 rounded-lg shadow-sm"
+                  *ngIf="fullBeer.ph"
+                >
+                  <div class="text-2xl font-bold text-custom-yellow">
+                    {{ fullBeer.ph }}
+                  </div>
+                  <div class="text-sm text-gray-600">pH Level</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Description
+            </h3>
+            <p class="text-gray-700 leading-relaxed">
+              {{ fullBeer.description }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Technical Tab -->
+        <div *ngIf="activeTab === 'technical'" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Technical Specifications -->
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h3
+                class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+              >
+                <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+                Technical Specifications
+              </h3>
+              <div class="space-y-2">
+                <div *ngIf="fullBeer.target_og" class="flex justify-between">
+                  <span class="text-gray-600">Original Gravity:</span>
+                  <span class="font-medium">{{ fullBeer.target_og }}</span>
+                </div>
+                <div *ngIf="fullBeer.target_fg" class="flex justify-between">
+                  <span class="text-gray-600">Final Gravity:</span>
+                  <span class="font-medium">{{ fullBeer.target_fg }}</span>
+                </div>
+                <div
+                  *ngIf="fullBeer.attenuation_level"
+                  class="flex justify-between"
+                >
+                  <span class="text-gray-600">Attenuation:</span>
+                  <span class="font-medium"
+                    >{{ fullBeer.attenuation_level }}%</span
+                  >
+                </div>
+                <div *ngIf="fullBeer.volume" class="flex justify-between">
+                  <span class="text-gray-600">Volume:</span>
+                  <span class="font-medium"
+                    >{{ fullBeer.volume.value }}
+                    {{ fullBeer.volume.unit }}</span
+                  >
+                </div>
+                <div *ngIf="fullBeer.boil_volume" class="flex justify-between">
+                  <span class="text-gray-600">Boil Volume:</span>
+                  <span class="font-medium"
+                    >{{ fullBeer.boil_volume.value }}
+                    {{ fullBeer.boil_volume.unit }}</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Brewing Method -->
+            <div class="bg-gray-50 rounded-lg p-4" *ngIf="fullBeer.method">
+              <h3
+                class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+              >
+                <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+                Brewing Method
+              </h3>
+              <div class="space-y-2">
+                <div
+                  *ngIf="
+                    fullBeer.method.mash_temp &&
+                    fullBeer.method.mash_temp.length > 0
+                  "
+                >
+                  <div class="text-gray-600 mb-1">Mash Temperature:</div>
+                  <div
+                    *ngFor="let mash of fullBeer.method.mash_temp"
+                    class="text-sm bg-white p-2 rounded"
+                  >
+                    {{ mash.temp.value }}°{{ mash.temp.unit }}
+                    <span *ngIf="mash.duration"
+                      >for {{ mash.duration }} minutes</span
+                    >
+                  </div>
+                </div>
+                <div
+                  *ngIf="fullBeer.method.fermentation"
+                  class="flex justify-between"
+                >
+                  <span class="text-gray-600">Fermentation:</span>
+                  <span class="font-medium"
+                    >{{ fullBeer.method.fermentation.temp.value }}°{{
+                      fullBeer.method.fermentation.temp.unit
+                    }}</span
+                  >
+                </div>
+                <div *ngIf="fullBeer.method.twist" class="flex justify-between">
+                  <span class="text-gray-600">Twist:</span>
+                  <span class="font-medium">{{ fullBeer.method.twist }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingredients Tab -->
+        <div
+          *ngIf="activeTab === 'ingredients' && fullBeer.ingredients"
+          class="space-y-6"
+        >
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Column: Malt -->
+            <div>
+              <!-- Malt -->
+              <div
+                *ngIf="fullBeer.ingredients?.malt?.length"
+                class="bg-gray-50 rounded-lg p-4"
+              >
+                <h3
+                  class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+                >
+                  <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+                  Malt
+                </h3>
+                <div class="grid grid-cols-1 gap-2">
+                  <div
+                    *ngFor="let malt of fullBeer.ingredients!.malt"
+                    class="bg-white p-3 rounded-lg shadow-sm"
+                  >
+                    <div class="font-medium text-gray-800">{{ malt.name }}</div>
+                    <div class="text-sm text-gray-600">
+                      {{ malt.amount.value }} {{ malt.amount.unit }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Hops and Yeast -->
+            <div class="space-y-6">
+              <!-- Hops -->
+              <div
+                *ngIf="fullBeer.ingredients?.hops?.length"
+                class="bg-gray-50 rounded-lg p-4"
+              >
+                <h3
+                  class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+                >
+                  <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+                  Hops
+                </h3>
+                <div class="grid grid-cols-1 gap-2">
+                  <div
+                    *ngFor="let hop of fullBeer.ingredients!.hops"
+                    class="bg-white p-3 rounded-lg shadow-sm"
+                  >
+                    <div class="font-medium text-gray-800">{{ hop.name }}</div>
+                    <div class="text-sm text-gray-600">
+                      {{ hop.amount.value }} {{ hop.amount.unit }}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      {{ hop.add }} • {{ hop.attribute }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Yeast -->
+              <div
+                *ngIf="fullBeer.ingredients?.yeast"
+                class="bg-gray-50 rounded-lg p-4"
+              >
+                <h3
+                  class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+                >
+                  <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+                  Yeast
+                </h3>
+                <div class="bg-white p-3 rounded-lg shadow-sm">
+                  <span class="text-gray-700">{{
+                    fullBeer.ingredients!.yeast
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pairings & Tips Tab -->
+        <div *ngIf="activeTab === 'pairings'" class="space-y-6">
+          <!-- Food Pairing -->
+          <div
+            *ngIf="fullBeer.food_pairing && fullBeer.food_pairing.length > 0"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Food Pairing Suggestions
+            </h3>
+            <div class="grid grid-cols-1 gap-3">
+              <div
+                *ngFor="let food of fullBeer.food_pairing"
+                class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-custom-yellow"
+              >
+                <span class="text-gray-700">{{ food }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brewer's Tips -->
+          <div *ngIf="fullBeer.brewers_tips" class="bg-gray-50 rounded-lg p-4">
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Brewer's Tips
+            </h3>
+            <div
+              class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-custom-yellow"
+            >
+              <p class="text-gray-700 italic">{{ fullBeer.brewers_tips }}</p>
+            </div>
+          </div>
+
+          <!-- Contributor -->
+          <div
+            *ngIf="fullBeer.contributed_by"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Contributor
+            </h3>
+            <div
+              class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-custom-yellow"
+            >
+              <p class="text-gray-700">{{ fullBeer.contributed_by }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Full Screen Modal -->
+  <div class="md:hidden fixed inset-0 bg-white z-50 flex flex-col">
+    <!-- Mobile Header -->
+    <div class="bg-custom-yellow p-4 h-[150px] overflow-hidden">
+      <div class="flex justify-between items-start">
+        <div class="flex-1">
+          <h1 class="text-2xl font-bold text-gray-800 mb-1">
+            {{ fullBeer?.name }}
+          </h1>
+          <p class="text-lg text-gray-700 italic">{{ fullBeer?.tagline }}</p>
+          <p class="text-sm text-gray-600 mt-1" *ngIf="fullBeer?.first_brewed">
+            First brewed: {{ fullBeer?.first_brewed }}
+          </p>
+        </div>
+        <button
+          (click)="onClose()"
+          class="text-gray-700 hover:text-gray-900 text-2xl font-light leading-none"
+        >
+          &times;
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Loading State -->
+    <div *ngIf="loading" class="flex-1 flex items-center justify-center">
+      <div class="text-center">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-b-2 border-custom-yellow mx-auto mb-4"
+        ></div>
+        <p class="text-gray-600">Loading beer details...</p>
+      </div>
+    </div>
+
+    <!-- Mobile Content -->
+    <div *ngIf="!loading && fullBeer" class="flex-1 flex flex-col min-h-0">
+      <!-- Always Visible Image -->
+      <div class="bg-gray-50 px-4 py-3 flex justify-center flex-shrink-0">
+        <img
+          [src]="fullBeer.image_url || fallbackImage"
+          [alt]="fullBeer.name"
+          class="h-[12vh] max-w-full object-contain rounded-lg shadow-sm"
+          (error)="onImageError($event)"
+        />
+      </div>
+
+      <!-- Mobile Tab Content -->
+      <div class="flex-1 overflow-y-auto px-4 py-3 pb-20">
+        <!-- Overview Tab -->
+        <div *ngIf="activeTab === 'overview'" class="space-y-4">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Basic Information
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-white p-3 rounded-lg shadow-sm">
+                <div class="text-xl font-bold text-custom-yellow">
+                  {{ fullBeer.abv }}%
+                </div>
+                <div class="text-xs text-gray-600">Alcohol by Volume</div>
+              </div>
+              <div
+                class="bg-white p-3 rounded-lg shadow-sm"
+                *ngIf="fullBeer.ibu"
+              >
+                <div class="text-xl font-bold text-custom-yellow">
+                  {{ fullBeer.ibu }}
+                </div>
+                <div class="text-xs text-gray-600">
+                  International Bitterness Units
+                </div>
+              </div>
+              <div
+                class="bg-white p-3 rounded-lg shadow-sm"
+                *ngIf="fullBeer.ebc"
+              >
+                <div class="text-xl font-bold text-custom-yellow">
+                  {{ fullBeer.ebc }}
+                </div>
+                <div class="text-xs text-gray-600">
+                  European Brewery Convention
+                </div>
+              </div>
+              <div
+                class="bg-white p-3 rounded-lg shadow-sm"
+                *ngIf="fullBeer.ph"
+              >
+                <div class="text-xl font-bold text-custom-yellow">
+                  {{ fullBeer.ph }}
+                </div>
+                <div class="text-xs text-gray-600">pH Level</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Description
+            </h3>
+            <p class="text-gray-700 leading-relaxed">
+              {{ fullBeer.description }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Technical Tab -->
+        <div *ngIf="activeTab === 'technical'" class="space-y-4">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Technical Specifications
+            </h3>
+            <div class="space-y-2">
+              <div *ngIf="fullBeer.target_og" class="flex justify-between">
+                <span class="text-gray-600">Original Gravity:</span>
+                <span class="font-medium">{{ fullBeer.target_og }}</span>
+              </div>
+              <div *ngIf="fullBeer.target_fg" class="flex justify-between">
+                <span class="text-gray-600">Final Gravity:</span>
+                <span class="font-medium">{{ fullBeer.target_fg }}</span>
+              </div>
+              <div
+                *ngIf="fullBeer.attenuation_level"
+                class="flex justify-between"
+              >
+                <span class="text-gray-600">Attenuation:</span>
+                <span class="font-medium"
+                  >{{ fullBeer.attenuation_level }}%</span
+                >
+              </div>
+              <div *ngIf="fullBeer.volume" class="flex justify-between">
+                <span class="text-gray-600">Volume:</span>
+                <span class="font-medium"
+                  >{{ fullBeer.volume.value }} {{ fullBeer.volume.unit }}</span
+                >
+              </div>
+              <div *ngIf="fullBeer.boil_volume" class="flex justify-between">
+                <span class="text-gray-600">Boil Volume:</span>
+                <span class="font-medium"
+                  >{{ fullBeer.boil_volume.value }}
+                  {{ fullBeer.boil_volume.unit }}</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Brewing Method -->
+          <div class="bg-gray-50 rounded-lg p-4" *ngIf="fullBeer.method">
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Brewing Method
+            </h3>
+            <div class="space-y-2">
+              <div
+                *ngIf="
+                  fullBeer.method.mash_temp &&
+                  fullBeer.method.mash_temp.length > 0
+                "
+              >
+                <div class="text-gray-600 mb-1">Mash Temperature:</div>
+                <div
+                  *ngFor="let mash of fullBeer.method.mash_temp"
+                  class="text-sm bg-white p-2 rounded"
+                >
+                  {{ mash.temp.value }}°{{ mash.temp.unit }}
+                  <span *ngIf="mash.duration"
+                    >for {{ mash.duration }} minutes</span
+                  >
+                </div>
+              </div>
+              <div
+                *ngIf="fullBeer.method.fermentation"
+                class="flex justify-between"
+              >
+                <span class="text-gray-600">Fermentation:</span>
+                <span class="font-medium"
+                  >{{ fullBeer.method.fermentation.temp.value }}°{{
+                    fullBeer.method.fermentation.temp.unit
+                  }}</span
+                >
+              </div>
+              <div *ngIf="fullBeer.method.twist" class="flex justify-between">
+                <span class="text-gray-600">Twist:</span>
+                <span class="font-medium">{{ fullBeer.method.twist }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingredients Tab -->
+        <div
+          *ngIf="activeTab === 'ingredients' && fullBeer.ingredients"
+          class="space-y-4"
+        >
+          <!-- Malt -->
+          <div
+            *ngIf="fullBeer.ingredients?.malt?.length"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Malt
+            </h3>
+            <div class="grid grid-cols-1 gap-2">
+              <div
+                *ngFor="let malt of fullBeer.ingredients!.malt"
+                class="bg-white p-3 rounded-lg shadow-sm"
+              >
+                <div class="font-medium text-gray-800">{{ malt.name }}</div>
+                <div class="text-sm text-gray-600">
+                  {{ malt.amount.value }} {{ malt.amount.unit }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hops -->
+          <div
+            *ngIf="fullBeer.ingredients?.hops?.length"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Hops
+            </h3>
+            <div class="grid grid-cols-1 gap-2">
+              <div
+                *ngFor="let hop of fullBeer.ingredients!.hops"
+                class="bg-white p-3 rounded-lg shadow-sm"
+              >
+                <div class="font-medium text-gray-800">{{ hop.name }}</div>
+                <div class="text-sm text-gray-600">
+                  {{ hop.amount.value }} {{ hop.amount.unit }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ hop.add }} • {{ hop.attribute }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Yeast -->
+          <div
+            *ngIf="fullBeer.ingredients?.yeast"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Yeast
+            </h3>
+            <div class="bg-white p-3 rounded-lg shadow-sm">
+              <span class="text-gray-700">{{
+                fullBeer.ingredients!.yeast
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pairings & Tips Tab -->
+        <div *ngIf="activeTab === 'pairings'" class="space-y-4">
+          <!-- Food Pairing -->
+          <div
+            *ngIf="fullBeer.food_pairing && fullBeer.food_pairing.length > 0"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Food Pairing Suggestions
+            </h3>
+            <div class="grid grid-cols-1 gap-3">
+              <div
+                *ngFor="let food of fullBeer.food_pairing"
+                class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-custom-yellow"
+              >
+                <span class="text-gray-700">{{ food }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brewer's Tips -->
+          <div *ngIf="fullBeer.brewers_tips" class="bg-gray-50 rounded-lg p-4">
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Brewer's Tips
+            </h3>
+            <div
+              class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-custom-yellow"
+            >
+              <p class="text-gray-700 italic">{{ fullBeer.brewers_tips }}</p>
+            </div>
+          </div>
+
+          <!-- Contributor -->
+          <div
+            *ngIf="fullBeer.contributed_by"
+            class="bg-gray-50 rounded-lg p-4"
+          >
+            <h3
+              class="text-lg font-semibold text-gray-800 mb-3 flex items-center"
+            >
+              <span class="w-2 h-2 bg-custom-yellow rounded-full mr-2"></span>
+              Contributor
+            </h3>
+            <div
+              class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-custom-yellow"
+            >
+              <p class="text-gray-700">{{ fullBeer.contributed_by }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Bottom Navigation -->
+      <div
+        class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex md:hidden"
+      >
+        <button
+          (click)="setActiveTab('overview')"
+          [class.active]="activeTab === 'overview'"
+          class="flex-1 py-3 px-2 text-center text-xs font-medium transition-colors duration-200"
+        >
+          <div class="flex flex-col items-center">
+            <span class="mb-1">📋</span>
+            Overview
+          </div>
+        </button>
+        <button
+          (click)="setActiveTab('technical')"
+          [class.active]="activeTab === 'technical'"
+          class="flex-1 py-3 px-2 text-center text-xs font-medium transition-colors duration-200"
+        >
+          <div class="flex flex-col items-center">
+            <span class="mb-1">⚙️</span>
+            Technical
+          </div>
+        </button>
+        <button
+          (click)="setActiveTab('ingredients')"
+          [class.active]="activeTab === 'ingredients'"
+          class="flex-1 py-3 px-2 text-center text-xs font-medium transition-colors duration-200"
+        >
+          <div class="flex flex-col items-center">
+            <span class="mb-1">🌾</span>
+            Ingredients
+          </div>
+        </button>
+        <button
+          (click)="setActiveTab('pairings')"
+          [class.active]="activeTab === 'pairings'"
+          class="flex-1 py-3 px-2 text-center text-xs font-medium transition-colors duration-200"
+        >
+          <div class="flex flex-col items-center">
+            <span class="mb-1">🍽️</span>
+            Pairings
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

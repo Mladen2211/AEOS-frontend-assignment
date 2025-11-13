@@ -1,0 +1,32 @@
+export const API_CONSTANTS = {
+  BASE_URL: 'https://api.adscanner.tv/punkapi/v2/beers',
+  DEFAULT_PAGE_SIZE: 25,
+  USER_AGENT: 'BeerCatalogApp/1.0'
+} as const;
+
+export const FILTER_CONSTANTS = {
+  MAX_ALCOHOL_PERCENTAGE: 23,
+  DEBOUNCE_TIME_MS: 300
+};
+
+export const RATE_LIMIT_CONSTANTS = {
+  WARNING_THRESHOLD: 10,
+  CRITICAL_THRESHOLD: 5
+} as const;
+
+export const RETRY_CONSTANTS = {
+  MAX_RETRIES: 3,
+  RATE_LIMIT_BASE_DELAY_MS: 1000,
+  SERVER_ERROR_BASE_DELAY_MS: 500
+} as const;
+
+export const LAZY_LOADING_CONSTANTS = {
+  ROOT_MARGIN: '50px',
+  MAX_CONCURRENT_REQUESTS: 3,
+  REQUEST_THROTTLE_MS: 100
+} as const;
+
+export const SCROLL_CONSTANTS = {
+  SCROLL_TOP_THRESHOLD: 300,
+  SCROLL_RESTORE_DELAY_MS: 100
+} as const;

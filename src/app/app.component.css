@@ -1,0 +1,37 @@
+/* Global styles */
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+img[src="logo.png"] {
+  object-fit: contain;
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Hover animations for cards */
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.transition-shadow {
+  transition: box-shadow 0.3s ease;
+}
+
+.transition-colors {
+  transition: color 0.2s ease;
+}

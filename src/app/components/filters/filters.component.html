@@ -1,0 +1,40 @@
+<section class="mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+    <div>
+      <label for="filterName" class="block text-sm font-medium text-gray-700 mb-1">Filter by name</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input type="text" id="filterName" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-custom-yellow focus:border-custom-yellow" [(ngModel)]="filterName" (ngModelChange)="onFilterChange()">
+      </div>
+    </div>
+
+    <div>
+      <label for="filterAlcohol" class="block text-sm font-medium text-gray-700 mb-1">Alcohol content (%)</label>
+      <input type="range" id="filterAlcohol" min="0" max="23" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-custom-yellow" [(ngModel)]="filterAlcohol" (ngModelChange)="onFilterChange()">
+      <div class="flex justify-between text-xs text-gray-500 mt-1">
+        <span>0%</span>
+        <span>{{ filterAlcohol }}</span>
+        <span>23%</span>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center md:justify-start h-full pb-2">
+      <input type="checkbox" id="filterFavorites" class="h-5 w-5 text-custom-yellow border-gray-300 rounded focus:ring-custom-yellow" [(ngModel)]="filterFavorites" (ngModelChange)="onFilterChange()">
+      <label for="filterFavorites" class="ml-2 text-sm font-medium text-gray-700">Show only favorites</label>
+    </div>
+
+    <div>
+      <label for="sortOrder" class="block text-sm font-medium text-gray-700 mb-1">Sort</label>
+      <select id="sortOrder" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-custom-yellow focus:border-custom-yellow" [(ngModel)]="sortOrder" (ngModelChange)="onFilterChange()">
+        <option value="name_asc">Sort by name (A-Z)</option>
+        <option value="name_desc">Sort by name (Z-A)</option>
+        <option value="alcohol_asc">Alcohol (Low-High)</option>
+        <option value="alcohol_desc">Alcohol (High-Low)</option>
+      </select>
+    </div>
+  </div>
+</section>
